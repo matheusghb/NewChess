@@ -8,18 +8,149 @@
     tools:context=".MainActivity">
 
     <LinearLayout
-        android:id="@+id/mainlayout"
-        android:layout_width="match_parent"
-        android:layout_height="400dp"
-        android:layout_marginTop="137dp"
-        android:layout_marginBottom="150dp"
+        android:layout_width="0dp"
+        android:layout_height="350dp"
         android:orientation="vertical"
+
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintDimensionRatio="1:1">
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_gravity="center_horizontal">
 
-</LinearLayout>
+            <FrameLayout
+                android:id="@+id/frameLayout"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:background="@android:drawable/btn_star_big_on"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintDimensionRatio="1:1">
 
+            </FrameLayout>
+
+            <FrameLayout
+                android:id="@+id/frameLayout2"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:background="@android:drawable/btn_star_big_on"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintStart_toEndOf="@+id/frameLayout"
+                app:layout_constraintTop_toTopOf="parent">
+
+            </FrameLayout>
+            <FrameLayout
+                android:id="@+id/frameLayout3"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:background="@android:drawable/btn_star_big_on"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintStart_toEndOf="@+id/frameLayout2"
+                app:layout_constraintTop_toTopOf="parent">
+
+            </FrameLayout>
+            <FrameLayout
+                android:id="@+id/frameLayout4"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:background="@android:drawable/btn_star_big_on"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintStart_toEndOf="@+id/frameLayout3"
+                app:layout_constraintTop_toTopOf="parent">
+
+            </FrameLayout>
+            <FrameLayout
+                android:id="@+id/frameLayout5"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:background="@android:drawable/btn_star_big_on"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintStart_toEndOf="@+id/frameLayout4"
+                app:layout_constraintTop_toTopOf="parent">
+
+            </FrameLayout>
+            <FrameLayout
+                android:id="@+id/frameLayout6"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:background="@android:drawable/btn_star_big_on"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintStart_toEndOf="@+id/frameLayout5"
+                app:layout_constraintTop_toTopOf="parent">
+
+            </FrameLayout>
+            <FrameLayout
+                android:id="@+id/frameLayout7"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:background="@android:drawable/btn_star_big_on"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintStart_toEndOf="@+id/frameLayout6"
+                app:layout_constraintTop_toTopOf="parent">
+
+            </FrameLayout>
+            <FrameLayout
+                android:id="@+id/frameLayout8"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:background="@android:drawable/btn_star_big_on"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintStart_toEndOf="@+id/frameLayout7"
+                app:layout_constraintTop_toTopOf="parent">
+
+            </FrameLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+        </androidx.constraintlayout.widget.ConstraintLayout>
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_gravity="center">
+        </androidx.constraintlayout.widget.ConstraintLayout>
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_gravity="center">
+        </androidx.constraintlayout.widget.ConstraintLayout>
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_gravity="center">
+        </androidx.constraintlayout.widget.ConstraintLayout>
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_gravity="center">
+        </androidx.constraintlayout.widget.ConstraintLayout>
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_gravity="center">
+        </androidx.constraintlayout.widget.ConstraintLayout>
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_gravity="center">
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

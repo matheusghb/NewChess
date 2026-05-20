@@ -1,5 +1,6 @@
 package com.example.chess;
 
+import android.app.ActionBar;
 import android.os.Bundle;
 import android.text.Layout;
 import android.view.View;
@@ -7,10 +8,14 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.ColorInt;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -25,12 +30,8 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-        Button btn = new Button(this);
-        btn.setText("teste");
-        LinearLayout l = findViewById(R.id.mainlayout);
-        l.addView(btn);
-
+        ConstraintLayout l = findViewById(R.id.main);
+        LinearLayout line = new LinearLayout(this);
     }
-
 
 }
