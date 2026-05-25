@@ -8,6 +8,7 @@ const Title = ({style, title_text, ...props}) => {
         <View style={[{
             backgroundColor: theme.title,
             padding: 7,
+            paddingHorizontal: 13,
             borderRadius: 10,
 
         },style]} {...props}>

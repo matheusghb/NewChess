@@ -5,7 +5,9 @@ import img from '../assets/splash-icon.png' // transforma o arquivo em um objeto
 import ThemedView from '../components/themedview'
 import Title from '../components/title'
 import ChessTable from '../components/chesstable'
+
 const Home = () => { // cria uma função que será usada pra renderizar os elementos.
+
     return (
         <ThemedView style={styles.container}>
             <Title title_text={'NewChess'}/>
@@ -31,10 +33,5 @@ const styles = StyleSheet.create({
         objectFit: 'contain',
         height: '50%'
     },
-    cube: {
-        backgroundColor: '#000',
-        aspectRatio: 1,
-        width: '50%'
-    }
 })
 
