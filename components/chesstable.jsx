@@ -3,43 +3,16 @@ import { colors } from '../constants/colors'
 
 const theme = colors['light'] 
 
-const ll = []
-const cl = []
-let cflag = true
-
-for (let c = 0; c < 8; c++) {
-
-    let bgcolor = ''
-    
-    if (cflag == true) {
-        bgcolor = theme.darkcolum
-    } else {
-        bgcolor = theme.lightcolum
-    }
-
-    console.log(cflag)
-
-    if (c != 7) {
-        cflag = !cflag
-    }
-
-    cl.push( {
-        key: 'square'+(c+1),
-        bgcolor: bgcolor
-    })
-
-}
-
-for (let l = 0; l < 8; l++) {
-
-    ll.push({
-        key: 'line'+(l+1),
-        columns: cl
-    })
-
-}
-
-const ChessTable = (colunas = 8, linhas = 8) => {
+const ChessTable = ({ colunas = 8, linhas =8
+  } = {}) => {
+   
+    const rows = Array.from({ length: linhas }, (_, r) => ({
+        key: 'line' + (r + 1),
+        columns: Array.from({ length: colunas }, (_, c) => ({
+            key: `square${r + 1}-${c + 1}`,
+            bgcolor: ((r + c) % 2 === 0) ? theme.darkcolum : theme.lightcolum
+        }))
+    }))
     
     const Square = ({ style }) => (
         <View style={[{
@@ -70,18 +43,13 @@ const ChessTable = (colunas = 8, linhas = 8) => {
         }}>
             <ScrollView style={{width:'100%', height:'100%'}} contentContainerStyle={{flexGrow: 1,justifyContent: 'center', alignItems: 'center'}}>
                 <ScrollView horizontal={true} style={{width:'100%', height:'100%'}} contentContainerStyle={{flexGrow: 1,justifyContent: 'center', alignItems: 'center', flexDirection: 'column'}}>
-                    {ll.map((line) => {
-                        return (
-                            <TableLines key={line.key}>
-                                {cl.map((column) => {
-            
-                                    return (
-                                        <Square key={column.key} style={{backgroundColor: column.bgcolor}}></Square>
-                                    )
-                                })}
-                            </TableLines>
-                        )
-                    })}
+                    {rows.map((line) => (
+                        <TableLines key={line.key}>
+                            {line.columns.map((column) => (
+                                <Square key={column.key} style={{ backgroundColor: column.bgcolor }} />
+                            ))}
+                        </TableLines>
+                    ))}
                 </ScrollView>                
             </ScrollView>
 
