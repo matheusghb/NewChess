@@ -2,6 +2,9 @@ export const colors = {
 
     primary: '#6849a7',
     warning: '#cc475a',
+    peon1: '#ffffff',
+    peon2: '#000',
+    
 
     dark: {
         text: '#d4d4d4',
