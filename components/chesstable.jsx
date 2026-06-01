@@ -17,17 +17,17 @@ const ChessTable = ({ colunas = 8, linhas =8
             bgcolor: ((r + c) % 2 == 0) ? theme.darkcolum : theme.lightcolum
         }))
     }))
-    // two circle positions. Defaults: bottom-left and top-right.
-    const [whiteCircle, setWhiteCircle] = useState(() => ({ r: linhas - 1, c: 0 }))
-    const [blackCircle, setBlackCircle] = useState(() => ({ r: 0, c: colunas - 1 }))
+    // two Peon positions. Defaults: bottom-left and top-right.
+    const [whitePeon, setWhitePeon] = useState(() => ({ r: linhas - 1, c: 0 }))
+    const [blackPeon, setBlackPeon] = useState(() => ({ r: 0, c: colunas - 1 }))
 
     const getSquareColor = (r, c, baseColor) => {
-        // highlight squares occupied by either circle
-        if (whiteCircle && whiteCircle.r === r && whiteCircle.c === c) return 'blue'
-        if (blackCircle && blackCircle.r === r && blackCircle.c === c) return 'blue'
+        // highlight squares occupied by either Peon
+        if (whitePeon && whitePeon.r == r && whitePeon.c == c) return 'blue'
+        if (blackPeon && blackPeon.r == r && blackPeon.c == c) return 'blue'
         // highlight forward neighbors in red
-        const isBottomForward = whiteCircle && (r === whiteCircle.r - 1) && Math.abs(c - whiteCircle.c) <= 1 && !(blackCircle && blackCircle.r === r && blackCircle.c === c)
-        const isTopForward = blackCircle && (r === blackCircle.r + 1) && Math.abs(c - blackCircle.c) <= 1 && !(whiteCircle && whiteCircle.r === r && whiteCircle.c === c)
+        const isBottomForward = whitePeon && (r == whitePeon.r - 1) && Math.abs(c - whitePeon.c) <= 1 && !(blackPeon && blackPeon.r == r && blackPeon.c == c)
+        const isTopForward = blackPeon && (r == blackPeon.r + 1) && Math.abs(c - blackPeon.c) <= 1 && !(whitePeon && whitePeon.r == r && whitePeon.c == c)
         if (isBottomForward || isTopForward) return 'red'
         return baseColor
     }
@@ -57,7 +57,7 @@ const ChessTable = ({ colunas = 8, linhas =8
     )
 
     const styles = StyleSheet.create({
-        circlewhite: {
+        Peonwhite: {
             zIndex: 1,
             width: '40%',
             aspectRatio: 1,
@@ -66,7 +66,7 @@ const ChessTable = ({ colunas = 8, linhas =8
             borderColor: '#000',
             backgroundColor: colors.peon2,
         },
-        circleblack: {
+        Peonblack: {
             zIndex: 1,
             width: '40%',
             aspectRatio: 1,
@@ -93,24 +93,33 @@ const ChessTable = ({ colunas = 8, linhas =8
                                 const c = column.cIndex
                                 const base = column.bgcolor
                                 const color = getSquareColor(r, c, base)
-                                // valid forward moves:
-                                const checkWhiteMove = whiteCircle && (r === whiteCircle.r - 1) && Math.abs(c - whiteCircle.c) <= 1 && !(blackCircle && blackCircle.r === r && blackCircle.c === c)
-                                const checkBlackMove = blackCircle && (r === blackCircle.r + 1) && Math.abs(c - blackCircle.c) <= 1 && !(whiteCircle && whiteCircle.r === r && whiteCircle.c === c)
+                                const checkWhiteMove = whitePeon && (r 
+                    == whitePeon.r - 1) && Math.abs(c - whitePeon.c) <= 1 && !(blackPeon && blackPeon.r 
+                    == r && blackPeon.c 
+                    == c)
+                                const checkBlackMove = blackPeon && (r 
+                    == blackPeon.r + 1) && Math.abs(c - blackPeon.c) <= 1 && !(whitePeon && whitePeon.r 
+                    == r && whitePeon.c 
+                    == c)
                                 const Available = checkWhiteMove || checkBlackMove
-                                const isWhiteHere = whiteCircle && whiteCircle.r === r && whiteCircle.c === c
-                                const isBlackHere = blackCircle && blackCircle.r === r && blackCircle.c === c
+                                const isWhiteHere = whitePeon && whitePeon.r 
+                == r && whitePeon.c 
+                == c
+                                const isBlackHere = blackPeon && blackPeon.r 
+                == r && blackPeon.c 
+                == c
                                 return (
                                     <Square
                                         key={column.key}
-                                        onPress={checkWhiteMove ? () => setWhiteCircle({ r, c }) : checkBlackMove ? () => setBlackCircle({ r, c }) : undefined}
+                                        onPress={checkWhiteMove ? () => setWhitePeon({ r, c }) : checkBlackMove ? () => setBlackPeon({ r, c }) : undefined}
                                         disabled={!Available}
                                         style={{ backgroundColor: color }}
                                     >
                                         {isWhiteHere && (
-                                            <View style={styles.circle} />
+                                            <View style={styles.Peonblack} />
                                         )}
                                         {isBlackHere && (
-                                            <View style={styles.circle2} />
+                                            <View style={styles.Peonwhite} />
                                         )}
                                     </Square>
                                 )
