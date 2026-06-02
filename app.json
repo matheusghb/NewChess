@@ -16,7 +16,8 @@
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
-      }
+      },
+      "package": "com.K&Muninassau.chess"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -24,6 +25,12 @@
     "plugins": [
       "expo-router",
       "expo-status-bar"
-    ]
+    ],
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "e3b060ca-7782-43f9-90ad-3b8a1e4cf0e5"
+      }
+    }
   }
 }

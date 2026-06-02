@@ -14,32 +14,34 @@ const ChessTable = ({ colunas = 8, linhas =8
             key: `square${r + 1}-${c + 1}`,
             rIndex: r,
             cIndex: c,
-            bgcolor: ((r + c) % 2 == 0) ? theme.darkcolum : theme.lightcolum
+            bgcolor: ((r + c) % 2 == 0) ? theme.darkcolum : theme.lightcolum //cria o tabuleiro
         }))
     }))
-    // two Peon positions. Defaults: bottom-left and top-right.
+
     const [whitePeon, setWhitePeon] = useState(() => ({ r: linhas - 1, c: 0 }))
     const [blackPeon, setBlackPeon] = useState(() => ({ r: 0, c: colunas - 1 }))
 
     const getSquareColor = (r, c, baseColor) => {
-        // highlight squares occupied by either Peon
+   
         if (whitePeon && whitePeon.r == r && whitePeon.c == c) return 'blue'
         if (blackPeon && blackPeon.r == r && blackPeon.c == c) return 'blue'
-        // highlight forward neighbors in red
-        const isBottomForward = whitePeon && (r == whitePeon.r - 1) && Math.abs(c - whitePeon.c) <= 1 && !(blackPeon && blackPeon.r == r && blackPeon.c == c)
-        const isTopForward = blackPeon && (r == blackPeon.r + 1) && Math.abs(c - blackPeon.c) <= 1 && !(whitePeon && whitePeon.r == r && whitePeon.c == c)
-        if (isBottomForward || isTopForward) return 'red'
-        return baseColor
+
+        const whiteMoveDir = whitePeon && (r == whitePeon.r - 1) && Math.abs(c - whitePeon.c) <= 1 && !(blackPeon && blackPeon.r == r && blackPeon.c == c)
+        const blackMoveDir = blackPeon && (r == blackPeon.r + 1) && Math.abs(c - blackPeon.c) <= 1 && !(whitePeon && whitePeon.r == r && whitePeon.c == c)
+        if (whiteMoveDir || blackMoveDir) return 'red'
+        return baseColor //verifica se o quadrado pode ser um alvo para os peões e colore pra vermelho
     }
     
     const Square = ({ style, onPress, disabled, children }) => (
         <TouchableOpacity onPress={onPress} disabled={disabled} activeOpacity={0.8} style={[{
+
             maxWidth: 100,
             minWidth: 40,
             flex: 1,
             aspectRatio: 1,
             justifyContent: 'center',
             alignItems: 'center',
+
         }, style]}>
             {children}
         </TouchableOpacity>
@@ -47,11 +49,12 @@ const ChessTable = ({ colunas = 8, linhas =8
 
     const TableLines = ({children}) => (
         <View style={{
+
             flexDirection: 'row', 
             justifyContent: 'center', 
             alignItems: 'center',
-            }}
-        >   
+            }}>
+
             {children}
         </View>
     )
@@ -71,7 +74,7 @@ const ChessTable = ({ colunas = 8, linhas =8
             width: '40%',
             aspectRatio: 1,
             borderRadius: 999,
-            borderWidth: 2,
+            borderWidth: 3,
             borderColor: '#fff',
             backgroundColor: colors.peon1,
         }
@@ -96,26 +99,22 @@ const ChessTable = ({ colunas = 8, linhas =8
                                 const checkWhiteMove = whitePeon && (r 
                     == whitePeon.r - 1) && Math.abs(c - whitePeon.c) <= 1 && !(blackPeon && blackPeon.r 
                     == r && blackPeon.c 
-                    == c)
+                    == c) //mesmo codigo que faz a tile ficar vermelha, mas só faz isso em tiles acima do peão, ja que ele começa na parte inferior do tabuleiro
                                 const checkBlackMove = blackPeon && (r 
                     == blackPeon.r + 1) && Math.abs(c - blackPeon.c) <= 1 && !(whitePeon && whitePeon.r 
                     == r && whitePeon.c 
-                    == c)
+                    == c) //mesmo codigo que faz a tile ficar vermelha, mas só faz isso em tiles abaixo do peão, ja que ele começa na parte superior do tabuleiro
                                 const Available = checkWhiteMove || checkBlackMove
-                                const isWhiteHere = whitePeon && whitePeon.r 
-                == r && whitePeon.c 
-                == c
-                                const isBlackHere = blackPeon && blackPeon.r 
-                == r && blackPeon.c 
-                == c
+                                const checkWhitepos = whitePeon && whitePeon.r == r && whitePeon.c == c
+                                const checkBlackPos = blackPeon && blackPeon.r == r && blackPeon.c == c //move o peão
                                 return (
                                     <Square
                                         key={column.key}
                                         onPress={checkWhiteMove ? () => setWhitePeon({ r, c }) : checkBlackMove ? () => setBlackPeon({ r, c }) : undefined}
                                         disabled={!Available}
-                                        style={{ backgroundColor: color }}
+                                        style={{ backgroundColor: color }} //se a tile nao for um alvo, volta a cor normal
                                     >
-                                        {isWhiteHere && (
+                                        {checkWhitepos && (
                                             <View style={styles.Peonblack} />
                                         )}
                                         {isBlackHere && (
@@ -128,8 +127,6 @@ const ChessTable = ({ colunas = 8, linhas =8
                     ))}
                 </ScrollView>                
             </ScrollView>
-
-
         </View>
     )
 }
