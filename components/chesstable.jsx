@@ -14,22 +14,71 @@ const ChessTable = ({ colunas = 8, linhas =8
             key: `square${r + 1}-${c + 1}`,
             rIndex: r,
             cIndex: c,
-            bgcolor: ((r + c) % 2 == 0) ? theme.darkcolum : theme.lightcolum //cria o tabuleiro
+            bgcolor: ((r + c) % 2 == 0) ? theme.darkcolum : theme.lightcolum 
+            //cria o tabuleiro
         }))
     }))
 
-    const [whitePeon, setWhitePeon] = useState(() => ({ r: linhas - 1, c: 0 }))
-    const [blackPeon, setBlackPeon] = useState(() => ({ r: 0, c: colunas - 1 }))
+    // coloca as units no lugar
+    const initialBlack = Array.from({ length: linhas }).flatMap((_, r) => (r < 2 ? Array.from({ length: colunas }, (_, c) => ({ r, c })) : []))
+    const initialWhite = Array.from({ length: linhas }).flatMap((_, r) => (r >= linhas - 2 ? Array.from({ length: colunas }, (_, c) => ({ r, c })) : []))
 
-    const getSquareColor = (r, c, baseColor) => {
-   
-        if (whitePeon && whitePeon.r == r && whitePeon.c == c) return 'blue'
-        if (blackPeon && blackPeon.r == r && blackPeon.c == c) return 'blue'
+    const [whiteUnits, setWhiteUnits] = useState(() => initialWhite)
+    const [blackUnits, setBlackUnits] = useState(() => initialBlack)
+    const [selected, setSelected] = useState(null)
+    const [turn, setTurn] = useState('white')
 
-        const whiteMoveDir = whitePeon && (r == whitePeon.r - 1) && Math.abs(c - whitePeon.c) <= 1 && !(blackPeon && blackPeon.r == r && blackPeon.c == c)
-        const blackMoveDir = blackPeon && (r == blackPeon.r + 1) && Math.abs(c - blackPeon.c) <= 1 && !(whitePeon && whitePeon.r == r && whitePeon.c == c)
-        if (whiteMoveDir || blackMoveDir) return 'red'
-        return baseColor //verifica se o quadrado pode ser um alvo para os peões e colore pra vermelho
+    const findUnitAt = (r, c) => {
+        const wIndex = whiteUnits.findIndex(u => u.r == r && u.c == c)
+        if (wIndex >= 0) return { color: 'white', index: wIndex }
+        const bIndex = blackUnits.findIndex(u => u.r == r && u.c == c)
+        if (bIndex >= 0) return { color: 'black', index: bIndex }
+        return null
+    }
+
+    const tem = (r, c, color) => {
+        return color == 'white'
+            ? whiteUnits.some(u => u.r == r && u.c == c)
+            : blackUnits.some(u => u.r == r && u.c == c)
+    }
+
+    const calcularMov = (r, c, baseColor) => {
+        // mostra os movimentos possiveis para a unit selecionada (apenas 1 tile diagonal)
+        if (selected && selected.color == 'white') {
+            const unit = whiteUnits[selected.index]
+            if (unit && unit.r == r && unit.c == c) return 'blue'
+            const whiteDiag = unit && Math.abs(r - unit.r) == 1 && Math.abs(c - unit.c) == 1
+            if (whiteDiag) {
+                // If target empty -> valid move. If occupied by black -> check landing square for jump capture
+                if (!tem(r, c, 'white') && !tem(r, c, 'black')) return 'red'
+                if (tem(r, c, 'black')) {
+                    const dr = r - unit.r
+                    const dc = c - unit.c
+                    const r2 = r + dr
+                    const c2 = c + dc
+                    const inside = r2 >= 0 && r2 < linhas && c2 >= 0 && c2 < colunas
+                    if (inside && !tem(r2, c2, 'white') && !tem(r2, c2, 'black')) return 'red'
+                }
+            }
+        }
+        if (selected && selected.color == 'black') {
+            const unit = blackUnits[selected.index]
+            if (unit && unit.r == r && unit.c == c) return 'blue'
+            const blackDiag = unit && Math.abs(r - unit.r) == 1 && Math.abs(c - unit.c) == 1
+            if (blackDiag) {
+                if (!tem(r, c, 'white') && !tem(r, c, 'black')) return 'red'
+                if (tem(r, c, 'white')) {
+                    const dr = r - unit.r
+                    const dc = c - unit.c
+                    const r2 = r + dr
+                    const c2 = c + dc
+                    const inside = r2 >= 0 && r2 < linhas && c2 >= 0 && c2 < colunas
+                    if (inside && !tem(r2, c2, 'white') && !tem(r2, c2, 'black')) return 'red'
+                }
+            }
+        }
+        return baseColor
+        // calcula as diagonais dos units e colore pra vermelho
     }
     
     const Square = ({ style, onPress, disabled, children }) => (
@@ -60,22 +109,22 @@ const ChessTable = ({ colunas = 8, linhas =8
     )
 
     const styles = StyleSheet.create({
-        Peonwhite: {
-            zIndex: 1,
-            width: '40%',
-            aspectRatio: 1,
-            borderRadius: 999,
-            borderWidth: 3,
-            borderColor: '#000',
-            backgroundColor: colors.peon2,
-        },
-        Peonblack: {
+        BlackUnit: {
             zIndex: 1,
             width: '40%',
             aspectRatio: 1,
             borderRadius: 999,
             borderWidth: 3,
             borderColor: '#fff',
+            backgroundColor: colors.peon2,
+        },
+        WhiteUnit: {
+            zIndex: 1,
+            width: '40%',
+            aspectRatio: 1,
+            borderRadius: 999,
+            borderWidth: 3,
+            borderColor: '#000',
             backgroundColor: colors.peon1,
         }
     })
@@ -95,30 +144,112 @@ const ChessTable = ({ colunas = 8, linhas =8
                                 const r = column.rIndex
                                 const c = column.cIndex
                                 const base = column.bgcolor
-                                const color = getSquareColor(r, c, base)
-                                const checkWhiteMove = whitePeon && (r 
-                    == whitePeon.r - 1) && Math.abs(c - whitePeon.c) <= 1 && !(blackPeon && blackPeon.r 
-                    == r && blackPeon.c 
-                    == c) //mesmo codigo que faz a tile ficar vermelha, mas só faz isso em tiles acima do peão, ja que ele começa na parte inferior do tabuleiro
-                                const checkBlackMove = blackPeon && (r 
-                    == blackPeon.r + 1) && Math.abs(c - blackPeon.c) <= 1 && !(whitePeon && whitePeon.r 
-                    == r && whitePeon.c 
-                    == c) //mesmo codigo que faz a tile ficar vermelha, mas só faz isso em tiles abaixo do peão, ja que ele começa na parte superior do tabuleiro
+                                const color = calcularMov(r, c, base)
+
+                                const occupant = findUnitAt(r, c)
+                                const checkWhitePos = occupant && occupant.color ==
+                 'white'
+                                const checkBlackPos = occupant && occupant.color ==
+                 'black'
+
+                                const checkWhiteMove = selected && selected.color == 'white' && (() => {
+                                    const unit = whiteUnits[selected.index]
+                                    if (!unit) return false
+                                    const dr = r - unit.r
+                                    const dc = c - unit.c
+                                    if (Math.abs(dr) !== 1 || Math.abs(dc) !== 1) return false
+                                    const occ = findUnitAt(r, c)
+                                    if (!occ) return true // empty square
+                                    // occupied: allow if opponent present and landing square is free and inside board
+                                    if (occ.color == 'black') {
+                                        const r2 = r + dr
+                                        const c2 = c + dc
+                                        const inside = r2 >= 0 && r2 < linhas && c2 >= 0 && c2 < colunas
+                                        if (!inside) return false
+                                        return !findUnitAt(r2, c2)
+                                    }
+                                    return false
+                                })()
+                                const checkBlackMove = selected && selected.color == 'black' && (() => {
+                                    const unit = blackUnits[selected.index]
+                                    if (!unit) return false
+                                    const dr = r - unit.r
+                                    const dc = c - unit.c
+                                    if (Math.abs(dr) !== 1 || Math.abs(dc) !== 1) return false
+                                    const occ = findUnitAt(r, c)
+                                    if (!occ) return true
+                                    if (occ.color == 'white') {
+                                        const r2 = r + dr
+                                        const c2 = c + dc
+                                        const inside = r2 >= 0 && r2 < linhas && c2 >= 0 && c2 < colunas
+                                        if (!inside) return false
+                                        return !findUnitAt(r2, c2)
+                                    }
+                                    return false
+                                })()
                                 const Available = checkWhiteMove || checkBlackMove
-                                const checkWhitepos = whitePeon && whitePeon.r == r && whitePeon.c == c
-                                const checkBlackPos = blackPeon && blackPeon.r == r && blackPeon.c == c //move o peão
+
+                                // script para selecionar a unit por click (only current turn can select)
+                                let onPress
+                                if (checkWhitePos && turn === 'white') onPress = () => setSelected({ color: 'white', index: occupant.index })
+                                else if (checkBlackPos && turn === 'black') onPress = () => setSelected({ color: 'black', index: occupant.index })
+                                // move e deseleciona a unit
+                                else if (checkWhiteMove) onPress = () => {
+                                    const unit = whiteUnits[selected.index]
+                                    if (!unit) return
+                                    const dr = r - unit.r
+                                    const dc = c - unit.c
+                                    const occ = findUnitAt(r, c)
+                                    if (occ && occ.color == 'black') {
+                                        const r2 = r + dr
+                                        const c2 = c + dc
+                                        // perform jump and remove captured black unit
+                                        setWhiteUnits(prev => { const next = [...prev]; next[selected.index] = { r: r2, c: c2 }; return next })
+                                        setBlackUnits(prev => prev.filter(u => !(u.r == r && u.c == c)))
+                                        setSelected({ color: 'white', index: selected.index })
+                                        // capture -> retain turn (white continues)
+                                        return
+                                    } else {
+                                        setWhiteUnits(prev => { const next = [...prev]; next[selected.index] = { r, c }; return next })
+                                        setSelected(null)
+                                        setTurn('black')
+                                    }
+                                }
+                                else if (checkBlackMove) onPress = () => {
+                                    const unit = blackUnits[selected.index]
+                                    if (!unit) return
+                                    const dr = r - unit.r
+                                    const dc = c - unit.c
+                                    const occ = findUnitAt(r, c)
+                                    if (occ && occ.color == 'white') {
+                                        const r2 = r + dr
+                                        const c2 = c + dc
+                                        setBlackUnits(prev => { const next = [...prev]; next[selected.index] = { r: r2, c: c2 }; return next })
+                                        setWhiteUnits(prev => prev.filter(u => !(u.r == r && u.c == c)))
+                                        setSelected({ color: 'black', index: selected.index })
+                                        // capture -> retain turn (black continues)
+                                        return
+                                    } else {
+                                        setBlackUnits(prev => { const next = [...prev]; next[selected.index] = { r, c }; return next })
+                                        setSelected(null)
+                                        setTurn('white')
+                                    }
+                                }
+
+                                const disabled = !(checkWhitePos || checkBlackPos || Available)
+
                                 return (
                                     <Square
                                         key={column.key}
-                                        onPress={checkWhiteMove ? () => setWhitePeon({ r, c }) : checkBlackMove ? () => setBlackPeon({ r, c }) : undefined}
-                                        disabled={!Available}
-                                        style={{ backgroundColor: color }} //se a tile nao for um alvo, volta a cor normal
+                                        onPress={onPress}
+                                        disabled={disabled}
+                                        style={{ backgroundColor: color }}
                                     >
-                                        {checkWhitepos && (
-                                            <View style={styles.Peonblack} />
+                                        {checkWhitePos && (
+                                            <View style={styles.WhiteUnit} />
                                         )}
-                                        {isBlackHere && (
-                                            <View style={styles.Peonwhite} />
+                                        {checkBlackPos && (
+                                            <View style={styles.BlackUnit} />
                                         )}
                                     </Square>
                                 )
