@@ -20,13 +20,14 @@ const ChessTable = ({ colunas = 8, linhas =8
     }))
 
     // coloca as units no lugar
-    const initialBlack = Array.from({ length: linhas }).flatMap((_, r) => (r < 2 ? Array.from({ length: colunas }, (_, c) => ({ r, c })) : []))
-    const initialWhite = Array.from({ length: linhas }).flatMap((_, r) => (r >= linhas - 2 ? Array.from({ length: colunas }, (_, c) => ({ r, c })) : []))
+    const inicialBlack = Array.from({ length: linhas }).flatMap((_, r) => (r < 2 ? Array.from({ length: colunas }, (_, c) => ({ r, c })) : []))
+    const inicialWhite = Array.from({ length: linhas }).flatMap((_, r) => (r >= linhas - 2 ? Array.from({ length: colunas }, (_, c) => ({ r, c })) : []))
 
-    const [whiteUnits, setWhiteUnits] = useState(() => initialWhite)
-    const [blackUnits, setBlackUnits] = useState(() => initialBlack)
+    const [whiteUnits, setWhiteUnits] = useState(() => inicialWhite)
+    const [blackUnits, setBlackUnits] = useState(() => inicialBlack)
     const [selected, setSelected] = useState(null)
     const [turn, setTurn] = useState('white')
+    const [posCapture, setposCapture] = useState(null)
 
     const findUnitAt = (r, c) => {
         const wIndex = whiteUnits.findIndex(u => u.r == r && u.c == c)
@@ -36,28 +37,32 @@ const ChessTable = ({ colunas = 8, linhas =8
         return null
     }
 
-    const tem = (r, c, color) => {
+    const tem = (r, c, color) => { //verifica o que tem na tile
         return color == 'white'
             ? whiteUnits.some(u => u.r == r && u.c == c)
             : blackUnits.some(u => u.r == r && u.c == c)
     }
 
     const calcularMov = (r, c, baseColor) => {
-        // mostra os movimentos possiveis para a unit selecionada (apenas 1 tile diagonal)
+        // mostra os movimentos possiveis para a unit selecionada (1 pra cada diagonal)
         if (selected && selected.color == 'white') {
             const unit = whiteUnits[selected.index]
             if (unit && unit.r == r && unit.c == c) return 'blue'
             const whiteDiag = unit && Math.abs(r - unit.r) == 1 && Math.abs(c - unit.c) == 1
             if (whiteDiag) {
-                // If target empty -> valid move. If occupied by black -> check landing square for jump capture
                 if (!tem(r, c, 'white') && !tem(r, c, 'black')) return 'red'
-                if (tem(r, c, 'black')) {
-                    const dr = r - unit.r
-                    const dc = c - unit.c
-                    const r2 = r + dr
-                    const c2 = c + dc
-                    const inside = r2 >= 0 && r2 < linhas && c2 >= 0 && c2 < colunas
-                    if (inside && !tem(r2, c2, 'white') && !tem(r2, c2, 'black')) return 'red'
+            }
+            if (unit) {
+                const dr = r - unit.r
+                const dc = c - unit.c
+                if (Math.abs(dr) == 2 && Math.abs(dc) == 2) {
+                    const rowAlvo = unit.r + Math.sign(dr)
+                    const colAlvo = unit.c + Math.sign(dc)
+                    const dentro = r >= 0 && r < linhas && c >= 0 && c < colunas
+                    if (dentro && !tem(r, c, 'white') && !tem(r, c, 'black')) {
+                        const uniAlvo = findUnitAt(rowAlvo, colAlvo)
+                        if (uniAlvo && uniAlvo.color == 'black') return 'green' // indica onde a unit vai cair depois de capturar
+                    }
                 }
             }
         }
@@ -67,18 +72,23 @@ const ChessTable = ({ colunas = 8, linhas =8
             const blackDiag = unit && Math.abs(r - unit.r) == 1 && Math.abs(c - unit.c) == 1
             if (blackDiag) {
                 if (!tem(r, c, 'white') && !tem(r, c, 'black')) return 'red'
-                if (tem(r, c, 'white')) {
-                    const dr = r - unit.r
-                    const dc = c - unit.c
-                    const r2 = r + dr
-                    const c2 = c + dc
-                    const inside = r2 >= 0 && r2 < linhas && c2 >= 0 && c2 < colunas
-                    if (inside && !tem(r2, c2, 'white') && !tem(r2, c2, 'black')) return 'red'
+            }
+            if (unit) {
+                const dr = r - unit.r
+                const dc = c - unit.c
+                if (Math.abs(dr) == 2 && Math.abs(dc) == 2) {
+                    const midR = unit.r + Math.sign(dr)
+                    const midC = unit.c + Math.sign(dc)
+                    const dentro = r >= 0 && r < linhas && c >= 0 && c < colunas
+                    if (dentro && !tem(r, c, 'white') && !tem(r, c, 'black')) {
+                        const ocupMid = findUnitAt(midR, midC)
+                        if (ocupMid && ocupMid.color == 'white') return 'green' //mesma coisa mas pro outro time
+                    }
                 }
             }
         }
         return baseColor
-        // calcula as diagonais dos units e colore pra vermelho
+        // calcula as diagonais dos units e colore pra vermelho/verde
     }
     
     const Square = ({ style, onPress, disabled, children }) => (
@@ -131,11 +141,28 @@ const ChessTable = ({ colunas = 8, linhas =8
 
     return (
         <View style={{
-            width: '90%',
-            aspectRatio: 1,
+            width: '100%',
             justifyContent: 'center',
             alignItems: 'center',
         }}>
+            <View style={{ marginBottom: 8, alignItems: 'center' }}>
+                <Text style={{
+                    fontSize: 16,
+                    fontWeight: '700',
+                    paddingHorizontal: 10,
+                    paddingVertical: 6,
+                    borderRadius: 8,
+                    color: turn == 'white' ? '#000' : '#fff',
+                    backgroundColor: turn == 'white' ? colors.peon1 : colors.peon2,
+                }}>{turn == 'white' ? 'turno do time Branco' : 'turno do time Preto'}</Text>
+            </View>
+
+            <View style={{
+                width: '90%',
+                aspectRatio: 1,
+                justifyContent: 'center',
+                alignItems: 'center',
+            }}>
             <ScrollView style={{width:'100%', height:'100%'}} contentContainerStyle={{flexGrow: 1,justifyContent: 'center', alignItems: 'center'}}>
                 <ScrollView horizontal={true} style={{width:'100%', height:'100%'}} contentContainerStyle={{flexGrow: 1,justifyContent: 'center', alignItems: 'center', flexDirection: 'column'}}>
                     {rows.map((line) => (
@@ -146,11 +173,9 @@ const ChessTable = ({ colunas = 8, linhas =8
                                 const base = column.bgcolor
                                 const color = calcularMov(r, c, base)
 
-                                const occupant = findUnitAt(r, c)
-                                const checkWhitePos = occupant && occupant.color ==
-                 'white'
-                                const checkBlackPos = occupant && occupant.color ==
-                 'black'
+                                const ocupupant = findUnitAt(r, c)
+                                const checkWhitePos = ocupupant && ocupupant.color =='white'
+                                const checkBlackPos = ocupupant && ocupupant.color =='black'
 
                                 const checkWhiteMove = selected && selected.color == 'white' && (() => {
                                     const unit = whiteUnits[selected.index]
@@ -158,15 +183,14 @@ const ChessTable = ({ colunas = 8, linhas =8
                                     const dr = r - unit.r
                                     const dc = c - unit.c
                                     if (Math.abs(dr) !== 1 || Math.abs(dc) !== 1) return false
-                                    const occ = findUnitAt(r, c)
-                                    if (!occ) return true // empty square
-                                    // occupied: allow if opponent present and landing square is free and inside board
-                                    if (occ.color == 'black') {
+                                    const ocup = findUnitAt(r, c)
+                                    if (!ocup) return true
+                                    if (ocup.color == 'black') {
                                         const r2 = r + dr
                                         const c2 = c + dc
-                                        const inside = r2 >= 0 && r2 < linhas && c2 >= 0 && c2 < colunas
-                                        if (!inside) return false
-                                        return !findUnitAt(r2, c2)
+                                        const dentro = r2 >= 0 && r2 < linhas && c2 >= 0 && c2 < colunas
+                                        if (!dentro) return false
+                                        return !findUnitAt(r2, c2) //ve se uma unit branca pode se mover
                                     }
                                     return false
                                 })()
@@ -176,38 +200,38 @@ const ChessTable = ({ colunas = 8, linhas =8
                                     const dr = r - unit.r
                                     const dc = c - unit.c
                                     if (Math.abs(dr) !== 1 || Math.abs(dc) !== 1) return false
-                                    const occ = findUnitAt(r, c)
-                                    if (!occ) return true
-                                    if (occ.color == 'white') {
+                                    const ocup = findUnitAt(r, c)
+                                    if (!ocup) return true
+                                    if (ocup.color == 'white') {
                                         const r2 = r + dr
                                         const c2 = c + dc
-                                        const inside = r2 >= 0 && r2 < linhas && c2 >= 0 && c2 < colunas
-                                        if (!inside) return false
-                                        return !findUnitAt(r2, c2)
+                                        const dentro = r2 >= 0 && r2 < linhas && c2 >= 0 && c2 < colunas
+                                        if (!dentro) return false
+                                        return !findUnitAt(r2, c2)// mesma coisa mas pro time preto
                                     }
                                     return false
                                 })()
                                 const Available = checkWhiteMove || checkBlackMove
 
-                                // script para selecionar a unit por click (only current turn can select)
+                                // script para selecionar a unit por click (verifica o turno)
                                 let onPress
-                                if (checkWhitePos && turn === 'white') onPress = () => setSelected({ color: 'white', index: occupant.index })
-                                else if (checkBlackPos && turn === 'black') onPress = () => setSelected({ color: 'black', index: occupant.index })
+                                if (checkWhitePos && turn == 'white') onPress = () => setSelected({ color: 'white', index: ocupupant.index })
+                                else if (checkBlackPos && turn == 'black') onPress = () => setSelected({ color: 'black', index: ocupupant.index })
                                 // move e deseleciona a unit
                                 else if (checkWhiteMove) onPress = () => {
                                     const unit = whiteUnits[selected.index]
                                     if (!unit) return
                                     const dr = r - unit.r
                                     const dc = c - unit.c
-                                    const occ = findUnitAt(r, c)
-                                    if (occ && occ.color == 'black') {
+                                    const ocup = findUnitAt(r, c)
+                                    if (ocup && ocup.color == 'black') {
                                         const r2 = r + dr
                                         const c2 = c + dc
-                                        // perform jump and remove captured black unit
+                                        // muda a unit branca de lugar e remove a preta
                                         setWhiteUnits(prev => { const next = [...prev]; next[selected.index] = { r: r2, c: c2 }; return next })
                                         setBlackUnits(prev => prev.filter(u => !(u.r == r && u.c == c)))
                                         setSelected({ color: 'white', index: selected.index })
-                                        // capture -> retain turn (white continues)
+                                        // dá o turno pro branco dnv
                                         return
                                     } else {
                                         setWhiteUnits(prev => { const next = [...prev]; next[selected.index] = { r, c }; return next })
@@ -220,14 +244,15 @@ const ChessTable = ({ colunas = 8, linhas =8
                                     if (!unit) return
                                     const dr = r - unit.r
                                     const dc = c - unit.c
-                                    const occ = findUnitAt(r, c)
-                                    if (occ && occ.color == 'white') {
+                                    const ocup = findUnitAt(r, c)
+                                    if (ocup && ocup.color == 'white') {
                                         const r2 = r + dr
                                         const c2 = c + dc
+                                        //muda a unit preta de lugar e remove a branca
                                         setBlackUnits(prev => { const next = [...prev]; next[selected.index] = { r: r2, c: c2 }; return next })
                                         setWhiteUnits(prev => prev.filter(u => !(u.r == r && u.c == c)))
                                         setSelected({ color: 'black', index: selected.index })
-                                        // capture -> retain turn (black continues)
+                                        // dá o turno pro preto dnv
                                         return
                                     } else {
                                         setBlackUnits(prev => { const next = [...prev]; next[selected.index] = { r, c }; return next })
@@ -256,8 +281,9 @@ const ChessTable = ({ colunas = 8, linhas =8
                             })}
                         </TableLines>
                     ))}
-                </ScrollView>                
-            </ScrollView>
+                    </ScrollView>                
+                </ScrollView>
+            </View>
         </View>
     )
 }
