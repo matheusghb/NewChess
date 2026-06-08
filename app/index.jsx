@@ -10,8 +10,7 @@ const Home = () => { // cria uma função que será usada pra renderizar os elem
 
     return (
         <ThemedView style={styles.container}>
-            <Title title_text={'NewChess'}/>
-            <Link href={"/newpage"}>Newpage</Link>
+            <Title title_text={'Checkers'}/>
             <ChessTable>
 
             </ChessTable>
