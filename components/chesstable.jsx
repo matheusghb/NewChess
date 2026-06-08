@@ -47,11 +47,6 @@ const ChessTable = ({ colunas = 8, linhas =8
         // mostra os movimentos possiveis para a unit selecionada (1 pra cada diagonal)
         if (selected && selected.color == 'white') {
             const unit = whiteUnits[selected.index]
-            if (unit && unit.r == r && unit.c == c) return 'blue'
-            const whiteDiag = unit && Math.abs(r - unit.r) == 1 && Math.abs(c - unit.c) == 1
-            if (whiteDiag) {
-                if (!tem(r, c, 'white') && !tem(r, c, 'black')) return 'red'
-            }
             if (unit) {
                 const dr = r - unit.r
                 const dc = c - unit.c
